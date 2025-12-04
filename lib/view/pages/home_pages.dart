@@ -8,13 +8,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // 1. GlobalKeys untuk target scroll
   final GlobalKey _homeKey = GlobalKey();
   final GlobalKey _jobsKey = GlobalKey();
   final GlobalKey _candidatesKey = GlobalKey();
   final GlobalKey _testimonyKey = GlobalKey();
 
-  // 2. State untuk Navbar
   int _selectedIndex = 0; // 0: Home, 1: Jobs, 2: Candidates, 3: Testimony
   late ScrollController _scrollController;
 
@@ -32,14 +30,10 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  // Logic untuk mendeteksi section mana yang sedang aktif
   void _onScroll() {
     // List keys sesuai urutan tampilan (Home -> Jobs -> Candidates -> Testimony)
     final keys = [_homeKey, _jobsKey, _candidatesKey, _testimonyKey];
 
-    // Kita cek dari index terakhir (bawah) ke atas
-    // Jika bagian atas sebuah section sudah melewati garis batas atas layar (offset < appbar height + buffer),
-    // maka section itu dianggap aktif.
     for (int i = keys.length - 1; i >= 0; i--) {
       final key = keys[i];
       final context = key.currentContext;
@@ -47,27 +41,24 @@ class _HomePageState extends State<HomePage> {
         final RenderBox box = context.findRenderObject() as RenderBox;
         // Dapatkan posisi Y widget relatif terhadap layar
         final offset = box.localToGlobal(Offset.zero);
-        
-        // Kriteria aktif: Jika bagian atas section berada di area atas layar (kurang dari 150px dari top)
-        // Angka 150 adalah buffer agar highlight berubah sedikit sebelum section benar-benar sampai atas
+
         if (offset.dy < 150) {
           if (_selectedIndex != i) {
             setState(() {
               _selectedIndex = i;
             });
           }
-          break; // Sudah ketemu yang paling bawah yang visible, stop loop
+          break;
         }
       }
     }
   }
 
-  // Fungsi scroll on click
   void _scrollToSection(GlobalKey key, int index) {
     setState(() {
-      _selectedIndex = index; // Update warna langsung saat diklik
+      _selectedIndex = index;
     });
-    
+
     final context = key.currentContext;
     if (context != null) {
       Scrollable.ensureVisible(
@@ -85,8 +76,8 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        // Agar AppBar tetap di atas saat scroll (opsional, default scaffold behavior sudah ok)
-        surfaceTintColor: Colors.transparent, 
+        surfaceTintColor: Colors.transparent,
+        toolbarHeight: 70,
         title: Row(
           children: [
             // LOGO
@@ -99,7 +90,7 @@ class _HomePageState extends State<HomePage> {
 
             // MENU NAVBAR
             Expanded(
-              flex: 6,
+              flex: 4,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -130,16 +121,23 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.all(Radius.circular(8)),
                     ),
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RegisterPage(),
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
+                          horizontal: 30,
+                          vertical: 18,
                         ),
                         backgroundColor: Colors.transparent,
                         shadowColor: Colors.transparent,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(50),
                         ),
                       ),
                       child: const Text(
@@ -159,7 +157,7 @@ class _HomePageState extends State<HomePage> {
       ),
 
       body: SingleChildScrollView(
-        controller: _scrollController, 
+        controller: _scrollController,
         child: Column(
           children: [
             // ───────────────────────────────
@@ -197,13 +195,22 @@ class _HomePageState extends State<HomePage> {
                           ),
                           const SizedBox(height: 5),
                           ShaderMask(
-                            shaderCallback: (bounds) => const LinearGradient(
-                              colors: [Color(0xFFFF8A34), Color(0xFFFF6FAF)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ).createShader(
-                              Rect.fromLTWH(0, 0, bounds.width, bounds.height),
-                            ),
+                            shaderCallback: (bounds) =>
+                                const LinearGradient(
+                                  colors: [
+                                    Color(0xFFFF8A34),
+                                    Color(0xFFFF6FAF),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ).createShader(
+                                  Rect.fromLTWH(
+                                    0,
+                                    0,
+                                    bounds.width,
+                                    bounds.height,
+                                  ),
+                                ),
                             child: const Text(
                               "Find Your Best",
                               style: TextStyle(
@@ -239,7 +246,7 @@ class _HomePageState extends State<HomePage> {
             ),
 
             // ───────────────────────────────
-            // 2. WHO CAN USE 
+            // 2. WHO CAN USE
             // ───────────────────────────────
             Container(
               padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 50),
@@ -442,23 +449,23 @@ class _HomePageState extends State<HomePage> {
             Container(
               key: _candidatesKey,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 100, horizontal: 40),
+              padding: const EdgeInsets.symmetric(
+                vertical: 100,
+                horizontal: 40,
+              ),
               color: Colors.white,
               child: Column(
                 children: [
                   const Text(
-                    "UNIVERSITAS CIPUTRA IN NUMBERS",
-                    textAlign: TextAlign.center,
+                    "Our Candidates",
                     style: TextStyle(
-                      fontSize: 35,
-                      fontWeight: FontWeight.w900,
-                      color: Color(0xFFD98736), // Warna emas/oranye khas UC
-                      letterSpacing: 1.5,
-                      fontFamily: 'Noto Sans', // Pastikan font konsisten
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 80),
-                  
+
                   // Row 1
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -468,21 +475,17 @@ class _HomePageState extends State<HomePage> {
                       _buildStatItem("8", "Fakultas"),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 50),
-                  
+
                   // Divider Line
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 50),
-                    child: Divider(
-                      color: Colors.black12, 
-                      thickness: 2,
-                    ),
+                    child: Divider(color: Colors.black12, thickness: 2),
                   ),
-                  
+
                   const SizedBox(height: 50),
 
-                  // Row 2
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -524,7 +527,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 10),
                   const Text(
-                    "Dengar pengalaman mahasiswa UC yang sudah berhasil",
+                    "Heard what they say about this platform",
                     style: TextStyle(fontSize: 18, color: Colors.grey),
                   ),
                   const SizedBox(height: 60),
